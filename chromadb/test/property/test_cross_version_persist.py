@@ -20,6 +20,7 @@ import re
 import multiprocessing
 from chromadb.config import Settings
 from chromadb.api.client import Client as ClientCreator
+from chromadb.migrations.migrate_collections import migrate_collections
 
 MINIMUM_VERSION = "0.4.1"
 version_re = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
@@ -251,7 +252,7 @@ def persist_generated_data_with_old_version(
 
 
 # Since we can't pickle the embedding function, we always generate record sets with embeddings
-collection_st: st.SearchStrategy[strategies.Collection] = st.shared(  # type: ignore[type-arg]
+collection_st: st.SearchStrategy[strategies.Collection] = st.shared(
     strategies.collections(with_hnsw_params=True, has_embeddings=True), key="coll"
 )
 
@@ -312,6 +313,7 @@ def test_cycle_versions(
     system = config.System(settings)
     system.start()
     client = ClientCreator.from_system(system)
+    migrate_collections(client)
     coll = client.get_collection(
         name=collection_strategy.name,
         embedding_function=not_implemented_ef(),  # type: ignore

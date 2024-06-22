@@ -7,6 +7,9 @@ import os
 import webbrowser
 
 from chromadb.cli.utils import set_log_file_path
+from chromadb.migrations.migrate_collections import migrate_collections
+from chromadb import PersistentClient
+from chromadb.config import DEFAULT_DATABASE, DEFAULT_TENANT
 
 app = typer.Typer()
 
@@ -95,6 +98,24 @@ def docs() -> None:
     """Opens docs url in your browser"""
 
     webbrowser.open("https://docs.trychroma.com")
+
+
+@app.command()  # type: ignore
+def migrate(
+    path: str = typer.Option(
+        "./chroma", help="The path to the persistent chroma directory."
+    ),
+    tenant: str = typer.Option(
+        DEFAULT_TENANT, help="The name of the tenant to migrate collections for."
+    ),
+    database: str = typer.Option(
+        DEFAULT_DATABASE, help="The name of the database to migrate collections for."
+    ),
+) -> None:
+    """Migrates the collections in a Local Chroma instance to the latest version of ChromaDB."""
+
+    client = PersistentClient(path=path)
+    migrate_collections(client)  # type: ignore[arg-type]
 
 
 if __name__ == "__main__":

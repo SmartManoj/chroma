@@ -134,9 +134,14 @@ class Collection(
         """Deserializes a Collection object from JSON"""
 
         # Get the CollectionConfiguration from the JSON map, and remove it from the map
-        configuration = CollectionConfiguration.from_json(
-            json_map.pop("configuration_json")
-        )
+        try:
+            configuration = CollectionConfiguration.from_json(
+                json_map.pop("configuration_json")
+            )
+        except ValueError as e:
+            raise ValueError(
+                f"The configuration for collection {json_map['name']} is invalid: {e}. Was this collection created with an older version of Chroma? You may need to migrate! (See https://docs.trychroma.com/deployment/migration#migrating-collections---july-1,-2024)"
+            )
 
         return cls(configuration=configuration, **json_map)
 
