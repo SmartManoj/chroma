@@ -90,25 +90,6 @@ class Collection(
             version=version,
         )
 
-    def modify(
-        self,
-        name: Optional[str] = None,
-        metadata: Optional[Metadata] = None,
-        configuration: Optional[CollectionConfiguration] = None,
-    ) -> None:
-        """
-
-        Modifes the collection and returns a new instance of the collection. This does not partially update the
-        metadata or the configuration, but rather replaces them with the provided values.
-
-        """
-        if name is not None:
-            self.name = name
-        if configuration is not None:
-            self.configuration_json = configuration.to_json()
-        if metadata is not None:
-            self.metadata = metadata
-
     # TODO: This throws away type information.
     def __getitem__(self, key: str) -> Optional[Any]:
         """Allows the collection to be treated as a dictionary"""
