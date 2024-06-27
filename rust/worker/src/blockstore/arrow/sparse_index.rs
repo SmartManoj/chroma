@@ -341,9 +341,22 @@ impl SparseIndex {
             forward.remove(&old_start_key);
             if old_start_key == SparseIndexDelimiter::Start {
                 forward.insert(SparseIndexDelimiter::Start, new_block_id);
+                reverse.insert(new_block_id, SparseIndexDelimiter::Start);
             } else {
-                forward.insert(SparseIndexDelimiter::Key(new_start_key), new_block_id);
+                forward.insert(
+                    SparseIndexDelimiter::Key(new_start_key.clone()),
+                    new_block_id,
+                );
+                reverse.insert(new_block_id, SparseIndexDelimiter::Key(new_start_key));
             }
+        }
+    }
+
+    pub(super) fn remove_block(&self, block_id: Uuid) {
+        let mut forward = self.forward.lock();
+        let mut reverse = self.reverse.lock();
+        if let Some(start_key) = reverse.remove(&block_id) {
+            forward.remove(&start_key);
         }
     }
 

@@ -179,7 +179,7 @@ impl BlockDelta {
         return output;
     }
 
-    fn len(&self) -> usize {
+    pub(crate) fn len(&self) -> usize {
         self.builder.len()
     }
 }
