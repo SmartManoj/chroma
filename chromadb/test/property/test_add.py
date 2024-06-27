@@ -190,7 +190,11 @@ def test_add_large(
     ):
         coll.add(*batch)
 
-    if not NOT_CLUSTER_ONLY and should_compact:
+    if (
+        not NOT_CLUSTER_ONLY
+        and should_compact
+        and len(normalized_record_set["ids"]) > 10
+    ):
         # Wait for the model to be updated, since the record set is larger, add some additional time
         wait_for_version_increase(
             api, collection.name, initial_version, additional_time=240
